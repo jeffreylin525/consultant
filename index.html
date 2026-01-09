@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法律顧問回覆系統</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a3b5d">
+    <link rel="apple-touch-icon" href="icon.png"> 
+<style>
+ :root {
+    --primary-color: #1a3b5d; /* 專業深藍 */
+    --accent-color: #3498db;
+    --text-color: #2c3e50;
+    --bg-color: #f0f2f5;
+    --paper-bg: #ffffff;
+    --border-color: #e0e0e0;
+    
+    /* 螢幕顯示用的字體大小 (比列印稍大以利閱讀) */
+    --font-size-body: 1.1rem; 
+    --font-size-title: 1.3rem;
+}
+
+body {
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: var(--font-size-body);
+}
+
+/* --- 頂部 Header & Logo --- */
+.app-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky; /* 讓標題列吸附在頂部 */
+    top: 0;
+    z-index: 1000;
+}
+.brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    max-width: 210mm;
+    margin: 0 auto;
+}
+.header-logo {
+    height: 45px; /* Logo 高度 */
+    width: auto;
+    background: white; 
+    padding: 2px;
+    border-radius: 4px;
+}
+.app-header h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* --- 紙張容器 (A4 質感) --- */
+.paper-container {
+    padding: 20px;
+    padding-bottom: 100px; /* 預留底部按鈕空間 */
+    display: flex;
+    justify-content: center;
+}
+.paper {
+    background: var(--paper-bg);
+    width: 100%;
+    max-width: 210mm; /* A4 標準寬 */
+    min-height: 297mm;
+    padding: 25mm 20mm; /* 標準公文邊距 */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* --- 檔頭對齊核心設定 (關鍵) --- */
+.header-info {
+    margin-bottom: 40px;
+}
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+/* 讓標籤文字分散對齊 (例如：案由 vs 回覆日期) */
+.form-group label {
+    width: 5em; /* 固定寬度 (約4個字寬) */
+    text-align: justify;
+    text-align-last: justify; /* 強制分散對齊 */
+    font-weight: 700;
+    color: var(--text-color);
+    margin-right: 5px; /* 標籤與冒號的距離 */
+}
+.colon {
+    font-weight: 700;
+    margin-right: 1em; /* 冒號與輸入框的距離：一個中文字寬 */
+}
+/* 日期輸入框不換行 */
+input[type="date"] {
+    max-width: 200px;
+}
+
+/* --- 通用輸入框樣式 --- */
+input, textarea {
+    flex: 1; /* 佔滿剩餘空間 */
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: #000;
+    background: transparent;
+    outline: none;
+    resize: none;
+    transition: border 0.3s;
+}
+input:focus, textarea:focus {
+    border-bottom: 2px solid var(--primary-color);
+    background-color: rgba(26, 59, 93, 0.02);
+}
+
+/* 分隔線 */
+.divider {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 20px 0 35px 0;
+}
+
+/* --- 區塊與標題 --- */
+.section {
+    margin-bottom: 35px;
+}
+.section-title {
+    font-size: var(--font-size-title);
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-weight: 700;
+    border-left: 5px solid var(--primary-color); /* 左側藍條 */
+    padding-left: 10px; /* 標題文字縮排 */
+    line-height: 1.2;
+}
+/* 內容縮排：讓內容對齊標題文字的起始點 */
+.content-wrapper {
+    padding-left: 18px; /* 調整此數值以對齊標題文字 */
+}
+
+/* --- 法律依據雙欄 --- */
+.legal-basis-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: flex-start;
+}
+.basis-col-title { flex: 3; }
+.basis-col-content { flex: 7; }
+.basis-input-title {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* --- 圖片上傳區 --- */
+.image-upload-area {
+    margin-top: 20px;
+    border: 1px dashed #ccc;
+    padding: 15px;
+    border-radius: 6px;
+    background: #fafafa;
+}
+.image-preview-box img {
+    max-width: 100%;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+.upload-hint {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* --- 底部按鈕 --- */
+.action-bar {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    background: rgba(255,255,255,0.95);
+    padding: 15px;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 2000;
+}
+button {
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-secondary { background: white; border: 1px solid #ccc; color: var(--text-color); }
+.btn-add { 
+    background: transparent; 
+    color: var(--accent-color); 
+    border: 1px dashed var(--accent-color); 
+    border-radius: 4px; 
+    padding: 5px 15px; 
+}
+
+/* --- 頁尾 --- */
+.footer-note {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* --- 列印專用設定 (嚴格控制格式) --- */
+@media print {
+    @page { margin: 15mm 20mm; size: A4; }
+    
+    body {
+        background: white;
+        font-size: 12pt !important; /* 本文強制 12pt */
+        color: black;
+    }
+    
+    .paper-container, .paper {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .no-print { display: none !important; }
+    
+    /* 標題強制 14pt */
+    .section-title {
+        font-size: 14pt !important;
+        color: black !important;
+        border-left: 5px solid #000; /* 列印時藍條變黑條，更清晰 */
+    }
+    .basis-input-title { color: black !important; }
+    
+    /* 移除所有輸入框底線，像一般文件 */
+    input, textarea {
+        border-bottom: none !important;
+        padding: 0;
+        resize: none;
+    }
+    
+    /* 隱藏 placeholder */
+    ::placeholder { color: transparent; }
+    
+    /* 確保圖片列印 */
+    .image-upload-area {
+        border: none;
+        background: none;
+        padding: 0;
+    }
+    
+    /* 確保表頭標籤寬度正確 */
+    .form-group label {
+        width: 5em;
+        text-align-last: justify;
+    }
+}       
+    </style>
+
+</head>
+<body> 
+	<script> 
+	// 1. 設定預設日期為今日
+document.getElementById('dateInput').valueAsDate = new Date();
+
+// 2. 文字框自動調整高度 (Auto-resize)
+function autoResize(element) {
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
+}
+
+// 3. 新增法條欄位
+function addLegalBasis() {
+    const container = document.getElementById('legalBasisContainer');
+    const newRow = document.createElement('div');
+    newRow.className = 'legal-basis-row';
+    newRow.innerHTML = `
+        <div class="basis-col-title">
+            <input type="text" placeholder="法律名稱/條號" class="basis-input-title">
+        </div>
+        <div class="basis-col-content">
+            <textarea placeholder="條文內容..." oninput="autoResize(this)"></textarea>
+        </div>
+    `;
+    container.appendChild(newRow);
+}
+
+// 4. 圖片預覽功能
+function previewImage(input) {
+    const container = document.getElementById('imagePreviewContainer');
+    container.innerHTML = ''; // 清空舊圖
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            // 點擊圖片可移除 (方便操作)
+            img.onclick = function() {
+                if(confirm('要移除這張圖片嗎？')) {
+                    container.innerHTML = '';
+                    input.value = ''; // 清空 input
+                }
+            };
+            img.title = "點擊可移除圖片";
+            container.appendChild(img);
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// 5. 處理列印
+function handlePrint() {
+    window.print();
+}
+
+// 6. 處理分享
+function handleShare() {
+    const company = document.getElementById('companyName').value;
+    const subject = document.getElementById('caseSubject').value;
+    const response = document.getElementById('lawyerResponse').value;
+    
+    const textToShare = `【律師回覆】\n受文者：${company}\n案由：${subject}\n\n回覆重點：\n${response}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: '法律顧問回覆',
+            text: textToShare,
+        }).catch(console.error);
+    } else {
+        navigator.clipboard.writeText(textToShare).then(() => {
+            alert("文字內容已複製到剪貼簿！");
+        });
+    }
+}
+	</script> 
+</body>
+
+<header class="app-header no-print">
+    <div class="brand-container">
+        <img src="logo.png" alt="Logo" class="header-logo">
+        <h1>法律顧問回覆助手</h1>
+    </div>
+</header>
+
+<div class="paper-container">
+    <div class="paper">
+        <form id="legalForm">
+            <div class="header-info">
+                <div class="form-group">
+                    <label>回覆日期</label>
+                    <span class="colon">：</span>
+                    <input type="date" id="dateInput">
+                </div>
+                
+                <div class="form-group">
+                    <label>受文者</label>
+                    <span class="colon">：</span>
+                    <input type="text" id="companyName" placeholder="請輸入顧問公司名稱" class="input-lg">
+                </div>
+
+                <div class="form-group">
+                    <label>案由</label>
+                    <span class="colon">：</span>
+                    <input type="text" id="caseSubject" placeholder="請輸入案由" class="input-lg">
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section">
+                <h3 class="section-title">一、法律問題</h3>
+                <div class="content-wrapper">
+                    <textarea id="question" placeholder="請紀錄顧問公司提出之問題..." oninput="autoResize(this)"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">二、問題所涉文件</h3>
+                <div class="content-wrapper">
+                    <textarea id="documents" placeholder="請列出相關文件清單..." oninput="autoResize(this)"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">三、律師回覆意見</h3>
+                <div class="content-wrapper">
+                    <textarea id="lawyerResponse" placeholder="請在此輸入您的專業法律意見..." class="main-response" oninput="autoResize(this)"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">四、法令及契約依據</h3>
+                <div id="legalBasisContainer" class="content-wrapper">
+                    <div class="legal-basis-row">
+                        <div class="basis-col-title">
+                            <input type="text" placeholder="例：民法第179條" class="basis-input-title">
+                        </div>
+                        <div class="basis-col-content">
+                            <textarea placeholder="內容..." oninput="autoResize(this)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-wrapper">
+                    <button type="button" class="btn-add no-print" onclick="addLegalBasis()">
+                        <span class="icon">+</span> 新增法條
+                    </button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">五、其他意見或建議</h3>
+                <div class="content-wrapper">
+                    <textarea id="otherOpinions" placeholder="若無則留空..." oninput="autoResize(this)"></textarea>
+                    
+                    <div class="image-upload-area">
+                        <p class="no-print upload-hint">📎 插入法律關係圖或附件圖片：</p>
+                        <input type="file" accept="image/*" class="no-print" onchange="previewImage(this)">
+                        <div id="imagePreviewContainer" class="image-preview-box">
+                            </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-note">
+                <p>本文件由法律顧問系統生成，僅供諮詢參考，具體訴訟策略請依正式委任為準。</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="action-bar no-print">
+    <button onclick="handlePrint()" class="btn-primary">
+        列印 / 存為 PDF
+    </button>
+    <button onclick="handleShare()" class="btn-secondary">
+        分享文字
+    </button>
+</div>
+
+<script src="script.js"></script>
+<script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
